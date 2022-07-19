@@ -82,9 +82,29 @@ getRandomBird().then(bird => {
     console.log(wikiData)
   }) 
   
+	const wikiInfo = getWikiInfo(`https://en.wikipedia.org/w/api.php?action=query&titles=${birdName}&prop=extracts|pageimages|info&pithumbsize=400&inprop=url&redirects=&format=json&origin=*`)
+
+		//change image source 
+		wikiInfo.then(results => {
+			//for each key in the object returned from the API
+			Object.keys(results).forEach(key => {
+				//get the object with the pageId object on it
+				const pageIDObj = results[key].pages
+				//if the pages key exists in the object
+				if (pageIDObj !== undefined) {
+					//get the thumbnail
+					const pageID = Object.keys(pageIDObj)[0]
+					const thumbnailObj = pageIDObj[pageID].thumbnail
+					const thumbnailSource = thumbnailObj.source
+					//change the image source to the thumbnail's source
+					document.querySelector("img").src = thumbnailSource
+				}
+			})
+		})
   
 })
 }
+
 
 // link to get main image
 // http://en.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&piprop=original&titles=${birdName}&origin=*
