@@ -55,45 +55,50 @@ function getFetch() {
 		// Declare a variable for the bird name, transforming all but the first word in the name to lowercase to match parameters for Wikipedia API.
 		const birdName = resultingBirdInfo.en.split(' ').map((el, i) => i == 0 ? el : el.toLowerCase()).join('%20')
 
+		// getWikiInfo(`https://en.wikipedia.org/w/api.php?action=query&titles=${birdName}&prop=extracts|pageimages|info&pithumbsize=400&inprop=url&redirects=&format=json&origin=*`).then(wikiData => {
+
+		// 	const processWikiResults = results => {
+		// 		const resultArray = []
+		// 		Object.keys(results).forEach(key => {
+		// 			const id = key;
+		// 			const title = results[key].title
+		// 			const text = results[key].extract
+		// 			const img = results[key].hasOwnProperty('thumbnail')
+		// 				? results[key].thumbnail.source
+		// 				: null;
+		// 				const item = {
+		// 					id: id,
+		// 					title: title,
+		// 					img: img,
+		// 					text: text
+		// 				}
+		// 			resultArray.push(item)
+		// 		})
+		// 		console.log(resultArray)
+		// 	}
 
 
-		const wikiInfo = getWikiInfo(`https://en.wikipedia.org/w/api.php?action=query&titles=${birdName}&prop=extracts|pageimages|info&pithumbsize=400&inprop=url&redirects=&format=json&origin=*`).then(wikiData => {
-			// const resultArray = []
-			const processWikiResults = results => {
-				Object.keys(results).forEach(key => {
-					changeImageSource()
+		// 	console.log(wikiData)
+		// }) 
 
-					function changeImageSource() {
-						//get the object with the pageId object on it
-						const pageIDObj = results[key]?.pages
-						//if the pages key exists on the page
-						if (pageIDObj !== undefined) {
-							//get the thumbnail
-							const key = Object.keys(pageIDObj)[0]
-							const thumbnail = pageIDObj[key]["thumbnail"]
-							const source = thumbnail.source
-							console.log(source)
-							//change the source of the image
-							document.querySelector("img").src = source
-						}
-					}
-					// const id = key;
-					// const title = results[key].title
-					// const text = results[key].extract
-					// const img = results[key].hasOwnProperty('thumbnail')
-					// 	? results[key].thumbnail.source
-					// 	: null;
-					// console.log({ img })
-					// const item = {
-					// 	id: id,
-					// 	title: title,
-					// 	img: img,
-					// 	text: text
-					// }
-					// resultArray.push(item)
-				})
-			}
-			processWikiResults(wikiData)
+		const wikiInfo = getWikiInfo(`https://en.wikipedia.org/w/api.php?action=query&titles=${birdName}&prop=extracts|pageimages|info&pithumbsize=400&inprop=url&redirects=&format=json&origin=*`)
+
+		//change image source 
+		wikiInfo.then(results => {
+			//for each key in the object returned from the API
+			Object.keys(results).forEach(key => {
+				//get the object with the pageId object on it
+				const pageIDObj = results[key].pages
+				//if the pages key exists in the object
+				if (pageIDObj !== undefined) {
+					//get the thumbnail
+					const pageID = Object.keys(pageIDObj)[0]
+					const thumbnailObj = pageIDObj[pageID].thumbnail
+					const thumbnailSource = thumbnailObj.source
+					//change the image source to the thumbnail's source
+					document.querySelector("img").src = thumbnailSource
+				}
+			})
 		})
 	})
 }
